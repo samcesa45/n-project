@@ -8,6 +8,7 @@ app.use(express.json())
 
 app.use(express.urlencoded({extended:true}))
 app.use(cors())
+app.use(express.static('build'))
 morgan(':method :url :status :res[content-length] - :response-time ms')
 
 const requestLogger=(req:Request,_res:Response,next:NextFunction)=>{
@@ -16,12 +17,12 @@ const requestLogger=(req:Request,_res:Response,next:NextFunction)=>{
     console.log('Body: ', req.body);
     console.log('---');
     next()
-}
-
-
-
-app.use(requestLogger)
-app.use(morgan('tiny'))
+  }
+  
+  
+  
+  app.use(requestLogger)
+  app.use(morgan('tiny'))
 
 
 let notes:Note[] = [

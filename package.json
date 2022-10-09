@@ -4,8 +4,7 @@
   "description": "node api",
   "main": "index.ts",
   "scripts": {
-    "dev": "ts-node-dev ./build/index.ts",
-    "build": "ts-node-dev ./build/index.js",
+    "start": "ts-node-dev index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "samcesa",
