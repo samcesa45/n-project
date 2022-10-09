@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "node api",
   "main": "index.ts",
+  "engines":{
+    "node":"16.17.1"
+  },
   "scripts": {
     "start": "ts-node-dev index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
