@@ -7,7 +7,7 @@
     "node": "16.17.1"
   },
   "scripts": {
-    "start": "ts-node-dev index.ts",
+    "start": "ts-node index.js ",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "samcesa",
