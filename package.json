@@ -3,11 +3,8 @@
   "version": "1.0.0",
   "description": "node api",
   "main": "index.ts",
-  "engines": {
-    "node": "16.17.1"
-  },
   "scripts": {
-    "start": "ts-node index.js ",
+    "start": "ts-node index.ts ",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "samcesa",
@@ -22,7 +19,9 @@
   "dependencies": {
     "@types/morgan": "^1.9.3",
     "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
     "express": "^4.18.1",
+    "mongoose": "^6.6.5",
     "morgan": "^1.10.0"
   }
 }
