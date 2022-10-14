@@ -1,29 +1,17 @@
 import dotenv from 'dotenv'
-import {Schema,model,connect} from 'mongoose';
+import { Schema,model } from 'mongoose'
+import { INote } from '../types/types'
+
+
 dotenv.config()
-interface INOTE{
-    content:String,
-    date:Date,
-    important:boolean,
-}
 
- const password = process.env.MONGODB_URI
-const url = `mongodb+srv://samcesa45:${password}@cluster0.lumxc.mongodb.net/noteApp?retryWrites=true&w=majority`
 
-const run=async()=>{
-  //connect to mongoDB 
-  await connect(url)
-  console.log('connected')
-      console.log('note saved!');
-      
-  }
-  
-    run().catch(err=>console.log(err))
 
-const noteSchema = new Schema<INOTE>({
-    content:String,
-    date:Date,
-    important:Boolean,
+
+const noteSchema = new Schema<INote>({
+  content:{ type:String,minlength:5,required:true },
+  date:{ type:Date,required:true },
+  important:Boolean,
 })
 
 
@@ -35,6 +23,6 @@ noteSchema.set('toJSON', {
     delete returnedObject.__v
   }
 })
-const Note = model<INOTE>('Note',noteSchema)
+const Note = model<INote>('Note',noteSchema)
 
 export default Note

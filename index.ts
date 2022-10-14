@@ -1,34 +1,14 @@
+import app from './app'
+import http from 'http'
+import config from './utils/config'
+import logger from './utils/logger'
 
-import express,{ Request,Response,NextFunction} from 'express';
-import Note from './models/note';
-import cors from 'cors';
-import dotenv from 'dotenv'
-import morgan from 'morgan';
-dotenv.config()
-const app = express()
-app.use(express.json())
+const server = http.createServer(app)
 
-app.use(express.urlencoded({extended:true}))
-app.use(cors())
-app.use(express.static('build'))
-morgan(':method :url :status :res[content-length] - :response-time ms')
+server.listen(config.PORT, () => {
+  logger.info(`Server running on port ${config.PORT}`)
+})
 
-const requestLogger=(req:Request,_res:Response,next:NextFunction)=>{
-    console.log('Method:',req.method);
-    console.log('Path: ',req.path);
-    console.log('Body: ', req.body);
-    console.log('---');
-    next()
-  }
-  
-//   const unknownEndpoint=(_req:Request,res:Response)=>{
-//     res.status(404).send({error:'unknown endpoint'})
-// }
-
-
-app.use(requestLogger)
-app.use(morgan('tiny'))
-// app.use(unknownEndpoint)
 
 
 // let notes:Note[] = [
@@ -52,49 +32,6 @@ app.use(morgan('tiny'))
 //     }
 //   ]
 
-  type Note ={
-    id: string,
-    content: string,
-    date: string,
-    important: boolean
-  }
-
-    
-
-app.get('/api/notes',async(_req:Request,res:Response)=>{
-   const notes = await Note.find({})
-   return res.json(notes)
-  })
-
-app.get('/api/notes/:id',async(req:Request<{id:string}>,res:Response)=>{
-  const id = req.params.id
- const note = await Note.findById(id)
- return res.json(note)
-})
-
-app.post('/api/notes',async(req:Request<{},{},{content:string,important:boolean,date:Date}>,res:Response)=>{
-  const {content,important} = req.body
-
-  if(content === undefined){
-    return res.status(400).json({error:'content missing'})
-  }
-
-  const note = new Note({
-    content:content,
-    important:important || false,
-    date:new Date()
-  })
-
- const savedNote =await  note.save()
- return res.json(savedNote)
-})
-
-
-const PORT = process.env.PORT || process.env.PORT
-
-app.listen( PORT,()=>{
-  console.log(`Server running on port ${PORT}`)
-})
 
 
 
@@ -121,7 +58,7 @@ app.listen( PORT,()=>{
 
 //     if(!body.content){
 //         return res.status(400).json({error:"no content"})
-      
+
 //     }
 //     const note ={
 //         id: getId(),
@@ -133,7 +70,7 @@ app.listen( PORT,()=>{
 
 //         notes = notes.concat(note)
 //         return res.json(note)
-    
+
 // })
 
 // app.delete('/api/notes/:id',(req:Request<{id:string}>,res:Response)=>{

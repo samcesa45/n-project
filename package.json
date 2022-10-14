@@ -4,7 +4,12 @@
   "description": "node api",
   "main": "index.ts",
   "scripts": {
-    "start": "node index.ts ",
+    "start": "ts-node index.ts ",
+    "build:ui": "rm -rf build && cd ../n-project && npm run build && cp -r build ../n-project",
+    "deploy": "flyctl deploy",
+    "deploy:full": "npm run build:ui && npm run deploy",
+    "logs:prod": "fly logs",
+    "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "samcesa",
@@ -13,6 +18,9 @@
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.14",
     "@types/node": "^18.8.3",
+    "@typescript-eslint/eslint-plugin": "^5.40.0",
+    "@typescript-eslint/parser": "^5.40.0",
+    "eslint": "^8.25.0",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.4"
   },
