@@ -1,6 +1,6 @@
 import dotenv from 'dotenv'
 import { Schema,model } from 'mongoose'
-import { INote } from '../types/types'
+import { INote } from '../../types/types'
 
 
 dotenv.config()

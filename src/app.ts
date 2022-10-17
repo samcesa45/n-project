@@ -11,12 +11,14 @@ import middleware from './utils/middleware'
 const app = express()
 
 //connect to mongoose
-const password = config.MONGODB_URI
-const url = `mongodb+srv://samcesa45:${password}@cluster0.lumxc.mongodb.net/noteApp?retryWrites=true&w=majority`
+
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const password = config.MONGODB_URI!
+// const url = `mongodb+srv://samcesa45:${password}@cluster0.lumxc.mongodb.net/noteApp?retryWrites=true&w=majority`
 
 const run=async() => {
   //connect to mongoDB
-  await connect(url)
+  await connect(password)
   logger.info('connected')
   logger.info('note saved!')
 

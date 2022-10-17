@@ -8,7 +8,7 @@ const notesRouter = express.Router()
 
 notesRouter.get('/',async(_req:Request,res:Response) => {
   const notes = await Note.find({})
-  return res.json(notes)
+  res.json(notes)
 })
 
 notesRouter.get('/:id',async(req:Request<{id:string}>,res:Response,next:NextFunction) => {
@@ -42,7 +42,7 @@ notesRouter.post('/',async(req:Request<{},{},{content:string,important:boolean,d
 
   try {
     const savedNote = await note.save()
-    res.json(savedNote)
+    res.status(201).json(savedNote)
 
   } catch (error) {
     next(error)
@@ -68,8 +68,8 @@ notesRouter.put('/:id',async(req:Request<{id:string},{},{content:string,importan
 
 notesRouter.delete('/:id',async(req:Request<{id:string}>,res:Response,next:NextFunction) => {
   const id= req.params.id
-  await Note.findByIdAndRemove(id)
   try {
+    await Note.findByIdAndRemove(id)
     res.status(204).end()
   } catch (error) {
     next(error)
