@@ -12,6 +12,10 @@ const noteSchema = new Schema<INote>({
   content:{ type:String,minlength:5,required:true },
   date:{ type:Date,required:true },
   important:Boolean,
+  user:{
+    type: Schema.Types.ObjectId,
+    ref:'User'
+  }
 })
 
 
