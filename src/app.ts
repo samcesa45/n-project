@@ -2,6 +2,7 @@
 import cors from 'cors'
 import express from 'express'
 import { connect } from 'mongoose'
+import loginRouter from './controllers/login'
 import notesRouter from './controllers/notes'
 import userRouter from './controllers/users'
 import config from './utils/config'
@@ -34,6 +35,7 @@ app.use(middleware.requestLogger)
 
 app.use('/api/notes', notesRouter)
 app.use('/api/users',userRouter)
+app.use('/api/login',loginRouter)
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)

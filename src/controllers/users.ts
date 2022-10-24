@@ -4,6 +4,15 @@ import User from '../models/user'
 
 const userRouter = express.Router()
 
+userRouter.get('/', async (_req:Request,res:Response,next:NextFunction) => {
+
+  try {
+    const users = await User.find({}).populate('notes',{ content:1,date:1 })
+    res.json(users)
+  } catch (error) {
+    next(error)
+  }
+})
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 userRouter.post('/', async (req:Request<{},{},{username:string,name:string,password:string}>,res:Response,next:NextFunction) => {
@@ -16,20 +25,18 @@ userRouter.post('/', async (req:Request<{},{},{username:string,name:string,passw
   }
   const saltRounds = 10
   const passwordHash = await bcrypt.hash(password,saltRounds)
-  const match = await bcrypt.compare(passwordHash,password)
+  // const match = await bcrypt.compare(passwordHash,password)
 
   const user = new User({
     username,
     name,
-    password
+    password:passwordHash
   })
 
   try {
     const savedUser = await user.save()
-    if(match){
-      res.status(201).json(savedUser)
+    res.status(201).json(savedUser)
 
-    }
   } catch (error) {
     next(error)
   }

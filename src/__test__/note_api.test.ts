@@ -91,7 +91,7 @@ describe('addition of a new note', () => {
     const notesAtEnd = await helper.notesInDb()
     expect(notesAtEnd).toHaveLength(helper.initialNotes.length + 1)
 
-    const contents = notesAtEnd.map((n:{content:string}) => n.content)
+    const contents = notesAtEnd.map((n) => n.content)
     expect(contents).toContain(
       'async/await simplifies making async calls'
     )

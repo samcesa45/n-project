@@ -1,17 +1,28 @@
 import { Types } from 'mongoose'
 
-export type INote ={
-    id: string,
+// 1. Create an interface representing a document in MongoDB.
+export interface INote{
+    id:string,
     content: string,
     date: Date,
     important: boolean,
-    user:{types:Types.ObjectId,ref:string}
+     // Use `Types.ObjectId` in document interface...
+    user:Types.ObjectId,
   }
 
-export type IUSER ={
+export interface TokenInterface {
+    user: {
+       username: string;
+       name: string;
+       id: string;
+    };
+  }
+
+export interface IUSER {
+    id:string,
     username:string,
     name:string,
-    passwordHash:string,
-    notes:[{types:Types.ObjectId,ref:string}]
+    password:string,
+    notes:Types.ObjectId
 
   }

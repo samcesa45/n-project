@@ -6,23 +6,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
 const mongoose_1 = require("mongoose");
 dotenv_1.default.config();
-// 2. Create a Schema corresponding to the document interface.
-const noteSchema = new mongoose_1.Schema({
-    content: { type: String, minlength: 5, required: true },
-    date: { type: Date },
-    important: Boolean,
-    // And `Schema.Types.ObjectId` in the schema definition.
-    user: {
-        type: mongoose_1.Schema.Types.ObjectId,
-        ref: 'User'
-    }
+const userSchema = new mongoose_1.Schema({
+    username: { type: String, required: true },
+    name: { type: String, required: true },
+    password: String,
+    notes: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'Note' }]
 });
-noteSchema.set('toJSON', {
+userSchema.set('toJSON', {
     transform: (_document, returnedObject) => {
         returnedObject.id = returnedObject._id.toString();
         delete returnedObject._id;
         delete returnedObject.__v;
+        //the passwordHash should not be revealed
+        delete returnedObject.password;
     }
 });
-const Note = (0, mongoose_1.model)('Note', noteSchema);
-exports.default = Note;
+const User = (0, mongoose_1.model)('User', userSchema);
+exports.default = User;

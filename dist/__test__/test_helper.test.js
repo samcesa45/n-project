@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const note_1 = __importDefault(require("../models/note"));
+const user_1 = __importDefault(require("../models/user"));
 const initialNotes = [
     {
         content: 'HTML is easy',
@@ -35,8 +36,13 @@ const notesInDb = () => __awaiter(void 0, void 0, void 0, function* () {
     const notes = yield note_1.default.find({});
     return notes.map(note => note.toJSON());
 });
+const usersInDb = () => __awaiter(void 0, void 0, void 0, function* () {
+    const users = yield user_1.default.find({});
+    return users.map(u => u.toJSON());
+});
 exports.default = {
     initialNotes,
     nonExistingId,
-    notesInDb
+    notesInDb,
+    usersInDb
 };

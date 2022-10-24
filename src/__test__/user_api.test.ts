@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt'
 import helper from './test_helper.test'
-import User from '../models/user'
 import supertest from 'supertest'
+import User from '../models/user'
 import app from '../app'
 
 const api = supertest(app)
@@ -11,7 +11,7 @@ describe('when there is initially one user in db', () => {
     await User.deleteMany({})
 
     const passwordHash = await bcrypt.hash('sekret', 10)
-    const user = new User({ username:'root',passwordHash,name:'user1' })
+    const user = new User({ username:'root',password:passwordHash,name:'user1' })
 
     await user.save()
   })
@@ -19,18 +19,17 @@ describe('when there is initially one user in db', () => {
   test('creation succeeds with a fresh username', async () => {
     const usersAtStart = await helper.usersInDb()
 
-    const passwordHash = await bcrypt.hash('salainen', 10)
-    await bcrypt.compare(passwordHash,'salainen')
 
     const newUser = {
       username:'mluukkai',
       name:'Matti Luukkainen',
-      password:passwordHash
+      password:'salainen'
     }
 
     await api
       .post('/api/users')
       .send(newUser)
+      .expect(201)
       .expect('Content-Type',/application\/json/)
 
     const userAtEnd =  await helper.usersInDb()

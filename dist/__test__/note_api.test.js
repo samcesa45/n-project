@@ -20,74 +20,90 @@ const note_1 = __importDefault(require("../models/note"));
 const api = (0, supertest_1.default)(app_1.default);
 beforeEach(() => __awaiter(void 0, void 0, void 0, function* () {
     yield note_1.default.deleteMany({});
-    const noteObjects = test_helper_test_1.default.initialNotes
-        .map(note => new note_1.default(note));
-    const promiseArray = noteObjects.map(note => note.save());
-    yield Promise.all(promiseArray);
+    yield note_1.default.insertMany(test_helper_test_1.default.initialNotes);
 }));
-test('notes are returned as json', () => __awaiter(void 0, void 0, void 0, function* () {
-    yield api
-        .get('/api/notes')
-        .expect(200)
-        .expect('Content-Type', /application\/json/);
-}), 100000);
-test('all notes are returned', () => __awaiter(void 0, void 0, void 0, function* () {
-    const response = yield api.get('/api/notes');
-    expect(response.body).toHaveLength(test_helper_test_1.default.initialNotes.length);
-}), 100000);
-test('a specific note is within the returned notes', () => __awaiter(void 0, void 0, void 0, function* () {
-    const response = yield api.get('/api/notes');
-    const contents = response.body.map((r) => r.content);
-    expect(contents).toContain('Browser can execute only Javascript');
-}));
-test('a valid note can be added', () => __awaiter(void 0, void 0, void 0, function* () {
-    const newNote = {
-        content: 'async/await simplifies making async calls',
-        important: true
-    };
-    yield api
-        .post('/api/notes')
-        .send(newNote)
-        .expect(201)
-        .expect('Content-Type', /application\/json/);
-    const notesAtEnd = yield test_helper_test_1.default.notesInDb();
-    expect(notesAtEnd).toHaveLength(test_helper_test_1.default.initialNotes.length + 1);
-    const contents = notesAtEnd.map((n) => n.content);
-    expect(contents).toContain('async/await simplifies making async calls');
-}));
-test('note without content is not added', () => __awaiter(void 0, void 0, void 0, function* () {
-    const newNote = {
-        important: true
-    };
-    yield api
-        .post('/api/notes')
-        .send(newNote)
-        .expect(400);
-    const notesAtEnd = yield test_helper_test_1.default.notesInDb();
-    expect(notesAtEnd).toHaveLength(test_helper_test_1.default.initialNotes.length);
-}));
-test('a specific note can be viewed', () => __awaiter(void 0, void 0, void 0, function* () {
-    const notesAtStart = yield test_helper_test_1.default.notesInDb();
-    const noteToView = notesAtStart[0];
-    const resultNote = yield api
-        .get(`/ap/notes/${noteToView.id}`)
-        .expect(200)
-        .expect('Content-Type', /application\/json/);
-    const processedNoteToView = JSON.parse(JSON.stringify(noteToView));
-    expect(resultNote.body).toEqual(processedNoteToView);
-}));
-test('a note can be deleted', () => __awaiter(void 0, void 0, void 0, function* () {
-    const notesAtStart = yield test_helper_test_1.default.notesInDb();
-    const noteToDelete = notesAtStart[0];
-    console.log(noteToDelete);
-    yield api
-        .delete(`/api/notes/${noteToDelete.id}`)
-        .expect(204);
-    const notesAtEnd = yield test_helper_test_1.default.notesInDb();
-    expect(notesAtEnd).toHaveLength(test_helper_test_1.default.initialNotes.length - 1);
-    const contents = notesAtEnd.map(r => r.content);
-    expect(contents).not.toContain(noteToDelete.content);
-}));
+describe('when there is initially some notes saved', () => {
+    test('notes are returned as json', () => __awaiter(void 0, void 0, void 0, function* () {
+        yield api
+            .get('/api/notes')
+            .expect(200)
+            .expect('Content-Type', /application\/json/);
+    }));
+    test('all notes are returned', () => __awaiter(void 0, void 0, void 0, function* () {
+        const response = yield api.get('/api/notes');
+        expect(response.body).toHaveLength(test_helper_test_1.default.initialNotes.length);
+    }));
+    test('a specific note is within the returned notes', () => __awaiter(void 0, void 0, void 0, function* () {
+        const response = yield api.get('/api/notes');
+        const contents = response.body.map((r) => r.content);
+        expect(contents).toContain('Browser can execute only Javascript');
+    }));
+});
+describe('viewing a specific note', () => {
+    test('succeeds with a valid id', () => __awaiter(void 0, void 0, void 0, function* () {
+        const notesAtStart = yield test_helper_test_1.default.notesInDb();
+        const noteToView = notesAtStart[0];
+        const resultNote = yield api
+            .get(`/api/notes/${noteToView.id}`)
+            .expect(200)
+            .expect('Content-Type', /application\/json/);
+        const processedNoteToView = JSON.parse(JSON.stringify(noteToView));
+        expect(resultNote.body).toEqual(processedNoteToView);
+    }));
+    test('fails with statuscode 404 if note does not exit', () => __awaiter(void 0, void 0, void 0, function* () {
+        const validNoneexistingId = yield test_helper_test_1.default.nonExistingId();
+        console.log(validNoneexistingId);
+        yield api
+            .get(`/api/notes/${validNoneexistingId}`)
+            .expect(404);
+    }));
+    test('fails with statuscode 400 id is invalid', () => __awaiter(void 0, void 0, void 0, function* () {
+        const invalidId = '5a3d5da59070081a82a3445';
+        yield api
+            .get(`/api/notes/${invalidId}`)
+            .expect(400);
+    }));
+});
+describe('addition of a new note', () => {
+    test('succeeds with valid data', () => __awaiter(void 0, void 0, void 0, function* () {
+        const newNote = {
+            content: 'async/await simplifies making async calls',
+            important: true
+        };
+        yield api
+            .post('/api/notes')
+            .send(newNote)
+            .expect(201)
+            .expect('Content-Type', /application\/json/);
+        const notesAtEnd = yield test_helper_test_1.default.notesInDb();
+        expect(notesAtEnd).toHaveLength(test_helper_test_1.default.initialNotes.length + 1);
+        const contents = notesAtEnd.map((n) => n.content);
+        expect(contents).toContain('async/await simplifies making async calls');
+    }));
+    test('fails with status code 400 if data invalid', () => __awaiter(void 0, void 0, void 0, function* () {
+        const newNote = {
+            important: true
+        };
+        yield api
+            .post('/api/notes')
+            .send(newNote)
+            .expect(400);
+        const notesAtEnd = yield test_helper_test_1.default.notesInDb();
+        expect(notesAtEnd).toHaveLength(test_helper_test_1.default.initialNotes.length);
+    }));
+});
+describe('deletion of a note', () => {
+    test('succeeds with status code 204 if id is valid', () => __awaiter(void 0, void 0, void 0, function* () {
+        const notesAtStart = yield test_helper_test_1.default.notesInDb();
+        const noteToDelete = notesAtStart[0];
+        yield api.delete(`/api/notes/${noteToDelete.id}`)
+            .expect(204);
+        const notesAtEnd = yield test_helper_test_1.default.notesInDb();
+        expect(notesAtEnd).toHaveLength(test_helper_test_1.default.initialNotes.length - 1);
+        const contents = notesAtEnd.map(r => r.content);
+        expect(contents).not.toContain(noteToDelete.content);
+    }));
+});
 afterAll(() => {
     mongoose_1.default.connection.close();
 });

@@ -15,9 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /* eslint-disable @typescript-eslint/ban-types */
 const express_1 = __importDefault(require("express"));
 const note_1 = __importDefault(require("../models/note"));
+const user_1 = __importDefault(require("../models/user"));
 const notesRouter = express_1.default.Router();
 notesRouter.get('/', (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const notes = yield note_1.default.find({});
+    const notes = yield note_1.default.find({}).populate('user', { username: 1, name: 1 });
     res.json(notes);
 }));
 notesRouter.get('/:id', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -36,17 +37,21 @@ notesRouter.get('/:id', (req, res, next) => __awaiter(void 0, void 0, void 0, fu
     }
 }));
 notesRouter.post('/', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { content, important } = req.body;
+    const { content, important, userId } = req.body;
+    const user = yield user_1.default.findById(userId);
     if (content === undefined) {
         res.status(400).json({ error: 'content missing' });
     }
     const note = new note_1.default({
-        content: content,
-        important: important || false,
-        date: new Date()
+        content,
+        important: important === undefined ? false : important,
+        date: new Date(),
+        user: user === null || user === void 0 ? void 0 : user._id
     });
     try {
         const savedNote = yield note.save();
+        (user === null || user === void 0 ? void 0 : user.notes) ? [...[user === null || user === void 0 ? void 0 : user.notes], savedNote._id] : undefined;
+        yield (user === null || user === void 0 ? void 0 : user.save());
         res.status(201).json(savedNote);
     }
     catch (error) {
